@@ -24,5 +24,11 @@ function cinematicActors(){
  if(w[0])w[0].style.transform='rotate('+flap+'deg)';
  if(w[1])w[1].style.transform='scaleX(-1) rotate('+flap+'deg)';
  document.body.classList.toggle('cyber-on',target>.42);
+ const stage=document.querySelector('.cinemaStage'),sun=document.querySelector('.sunCore'),far=document.querySelector('.cityFar'),near=document.querySelector('.cityNear'),copy=document.querySelector('.hero .copy');
+ if(stage)stage.style.transform='translate3d('+(mx*-14)+'px,'+(target*-55)+'px,0) rotateY('+(mx*2)+'deg)';
+ if(sun)sun.style.transform='translate3d('+(mx*-22)+'px,'+(my*-12-target*35)+'px,0) scale('+(1+target*.18)+')';
+ if(far)far.style.transform='translateX('+(mx*-18)+'px)';
+ if(near)near.style.transform='translateX('+(mx*-34)+'px)';
+ if(copy&&target<.16)copy.style.transform='translate3d('+(mx*7)+'px,'+(target*-45)+'px,0)';
 }
 cinematicActors();
