@@ -11,3 +11,31 @@ function tick(t){requestAnimationFrame(tick);smooth+=(target-smooth)*.035;camera
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
 addEventListener('load',()=>setTimeout(()=>document.querySelector('#boot').classList.add('hide'),900));
 document.querySelectorAll('a').forEach(a=>a.addEventListener('mouseenter',()=>{if(cursor){cursor.style.width='48px';cursor.style.height='48px';cursor.style.borderColor='#f5b84b'}}));document.querySelectorAll('a').forEach(a=>a.addEventListener('mouseleave',()=>{if(cursor){cursor.style.width='30px';cursor.style.height='30px';cursor.style.borderColor='#20ddff77'}}));
+/* Scroll-controlled actor choreography */
+const actor=document.querySelector('.walkCharacter'), eagleActor=document.querySelector('.eagleActor'), cinemaStage=document.querySelector('.cinemaStage');
+let lastY=scrollY,lastT=performance.now(),walkPhase=0,walkEnergy=0;
+function actorScroll(){
+  const now=performance.now(),dy=scrollY-lastY,dt=Math.max(16,now-lastT),speed=Math.min(1,Math.abs(dy)/Math.max(1,dt)*1.7);
+  walkEnergy=Math.max(walkEnergy,speed);walkPhase+=dy*.028;
+  lastY=scrollY;lastT=now;
+}
+addEventListener('scroll',actorScroll,{passive:true});
+function animateActor(){
+  requestAnimationFrame(animateActor);
+  if(!actor)return;
+  walkEnergy*=.91;
+  const stride=Math.sin(walkPhase)*Math.min(1,walkEnergy*2.8);
+  actor.style.setProperty('--walk',stride.toFixed(3));
+  const cyber=target>.42;
+  document.body.classList.toggle('cyber-on',cyber);
+  const head=actor.querySelector('.wcHead');
+  if(head)head.style.transform='rotateY('+(mx*12)+'deg) rotateX('+(-my*5)+'deg)';
+  if(eagleActor){
+    const take=Math.min(1,target*8),finalReturn=Math.max(0,(target-.86)/.14);
+    let x=take*(innerWidth*.24)-finalReturn*(innerWidth*.16),y=-take*110+Math.sin(performance.now()*.0015)*12+finalReturn*150;
+    eagleActor.style.transform='translate('+x+'px,'+y+'px) rotate('+(take*8-finalReturn*12)+'deg)';
+    const flap=Math.sin(performance.now()*.012)*(18+take*22);
+    const wings=eagleActor.querySelectorAll('.wing');if(wings[0])wings[0].style.transform='rotate('+flap+'deg)';if(wings[1])wings[1].style.transform='scaleX(-1) rotate('+flap+'deg)';
+  }
+  if(cinemaStage){const travel=Math.min(1,target/.82);cinemaStage.style.transform='translate3d(0,'+(-travel*22)+'px,0)';}
+}animateActor();
